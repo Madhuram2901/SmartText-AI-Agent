@@ -53,5 +53,4 @@ All rewriting happens **offline and securely on your machine** using models like
 
 ---
 
-## 📂 Project Structure
 
