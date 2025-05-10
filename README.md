@@ -1,1 +1,1 @@
-# SmartMail-AI-Agent
+# SmartText-AI-Agent
