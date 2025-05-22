@@ -1,0 +1,56 @@
+.smartmail-box {
+    width: 522px;
+    height: 213px;
+    background-color: #FFFFFF;
+    border: 6px solid #BD8C44;
+    border-radius: 14px;
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-family: sans-serif;
+  }
+  
+  .smartmail-output {
+    height: 60px;
+    resize: none;
+    border: none;
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 6px;
+    background-color: #fff;
+    outline: none;
+    font-family: inherit;
+  }
+  
+  .smartmail-input {
+    border: 1px solid #BD8C44;
+    border-radius: 20px;
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+    font-family: inherit;
+  }
+  
+  .smartmail-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .smartmail-buttons button {
+    padding: 6px 12px;
+    border: 1px solid #BD8C44;
+    border-radius: 16px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: background-color 0.2s;
+  }
+  
+  .smartmail-buttons button:hover {
+    background-color: #f4e6d2;
+  }
+  
