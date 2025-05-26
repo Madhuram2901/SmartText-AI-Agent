@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <style>
-    body { font-family: Arial, sans-serif; width: 300px; padding: 10px; }
-    #convertedText { width: 100%; height: 100px; margin-bottom: 10px; }
-    .tone-buttons { display: flex; justify-content: space-between; }
-    button { padding: 5px 10px; }
-  </style>
+  <link rel="stylesheet" href="popup.css">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartText</title>
 </head>
 <body>
-  <div>
-    <label for="convertedText">New Text_converted Text</label>
-    <textarea id="convertedText" readonly></textarea>
-  </div>
-  <div>
-    <p>How would you like the text to be in?</p>
-    <div class="tone-buttons">
-      <button class="tone-btn" data-tone="formal">Formal</button>
-      <button class="tone-btn" data-tone="casual">Casual</button>
-      <button class="tone-btn" data-tone="funny">Funny</button>
-      <button class="tone-btn" data-tone="professional">Professional</button>
+  <div class="popup-content">
+    <div class="popup-header">
+      <h2 class="popup-title">SmartText</h2>
+    </div>
+    
+    <div class="text-display" id="convertedText" contenteditable="false"></div>
+    
+    <div class="input-section">
+      <input type="text" id="style-input" placeholder="Type your custom instruction here...">
+    </div>
+    
+    <div class="style-buttons">
+      <button class="style-btn" data-tone="formal">Formal</button>
+      <button class="style-btn" data-tone="casual">Casual</button>
+      <button class="style-btn" data-tone="funny">Funny</button>
+      <button class="style-btn" data-tone="professional">Professional</button>
     </div>
   </div>
   <script src="popup.js"></script>
