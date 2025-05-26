@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const styleInput = document.getElementById('style-input');
   const convertedText = document.getElementById('convertedText');
-  
-  // Add apply button to the UI
+
+  // Add Apply button if it doesn't exist
   function addApplyButton() {
     if (!document.querySelector('.apply-btn')) {
       const buttonsContainer = document.querySelector('.style-buttons');
@@ -10,8 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
       applyBtn.className = 'style-btn apply-btn';
       applyBtn.textContent = 'Apply';
       buttonsContainer.appendChild(applyBtn);
-      
-      // Add event listener to apply button
+
       applyBtn.addEventListener('click', () => {
         const result = convertedText.textContent;
         if (result && result !== 'No text selected.' && result !== 'Processing...') {
@@ -20,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   }
-  
-  // Retrieve selected text from storage when popup opens
+
+  // Load selected text from Chrome storage
   chrome.storage.local.get(['selectedText'], (data) => {
     if (data.selectedText) {
       convertedText.textContent = data.selectedText;
@@ -29,82 +28,122 @@ document.addEventListener('DOMContentLoaded', () => {
       convertedText.textContent = "No text selected.";
     }
   });
-  
-  // Style buttons
+
+  // Handle predefined tone buttons
   document.querySelectorAll('.style-btn').forEach(button => {
     button.addEventListener('click', () => {
-      // Remove active class from all buttons
       document.querySelectorAll('.style-btn').forEach(btn => {
         btn.classList.remove('active');
       });
-      
-      // Add active class to clicked button
       button.classList.add('active');
-      
-      let tone = button.getAttribute('data-tone');
+
+      const tone = button.getAttribute('data-tone');
+
       chrome.storage.local.get(['selectedText'], (data) => {
         if (!data.selectedText) {
           convertedText.textContent = "No text selected.";
           return;
         }
-        
-        // Show loading state
+
         convertedText.textContent = "Processing...";
-        
+
+        const payload = {
+          text: data.selectedText,
+          tone: tone,
+          customInstruction: ""
+        };
+
+        console.log("Sending to backend:", payload);
+
         fetch('http://localhost:5000/convert-tone', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: data.selectedText, tone: tone })
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
         })
-        .then(res => res.json())
-        .then(data => {
-          convertedText.textContent = data.result;
-          addApplyButton();
-        })
-        .catch(err => {
-          convertedText.textContent = "Error converting text.";
-          console.error('Error:', err);
-        });
+          .then(async res => {
+            const data = await res.json();
+            if (!res.ok) {
+              throw new Error(data.error || 'Server error occurred');
+            }
+            return data;
+          })
+          .then(data => {
+            if (data.result) {
+              convertedText.textContent = data.result;
+              addApplyButton();
+            } else if (data.error) {
+              convertedText.textContent = `Error: ${data.error}`;
+              console.error("API Error:", data.error);
+            } else {
+              convertedText.textContent = "Unexpected error: Invalid response format";
+              console.error("Unexpected response:", data);
+            }
+          })
+          .catch(err => {
+            convertedText.textContent = `Error: ${err.message}`;
+            console.error("Fetch Error:", err);
+          });
       });
     });
   });
-  
-  // Custom instruction input
+
+  // Handle custom tone via style input
   styleInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       const customInstruction = styleInput.value.trim();
-      
       if (!customInstruction) return;
-      
+
       chrome.storage.local.get(['selectedText'], (data) => {
         if (!data.selectedText) {
           convertedText.textContent = "No text selected.";
           return;
         }
-        
-        // Show loading state
+
         convertedText.textContent = "Processing...";
-        
+
+        const payload = {
+          text: data.selectedText,
+          tone: 'custom',
+          customInstruction: customInstruction
+        };
+
+        console.log("Sending to backend:", payload);
+
         fetch('http://localhost:5000/convert-tone', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            text: data.selectedText, 
-            tone: 'custom',
-            customInstruction: customInstruction 
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        })
+          .then(async res => {
+            const data = await res.json();
+            if (!res.ok) {
+              throw new Error(data.error || 'Server error occurred');
+            }
+            return data;
           })
-        })
-        .then(res => res.json())
-        .then(data => {
-          convertedText.textContent = data.result;
-          // Clear the input
-          styleInput.value = '';
-          addApplyButton();
-        })
-        .catch(err => {
-          convertedText.textContent = "Error converting text.";
-          console.error('Error:', err);
-        });
+          .then(data => {
+            if (data.result) {
+              convertedText.textContent = data.result;
+              styleInput.value = '';
+              addApplyButton();
+            } else if (data.error) {
+              convertedText.textContent = `Error: ${data.error}`;
+              console.error("API Error:", data.error);
+            } else {
+              convertedText.textContent = "Unexpected error: Invalid response format";
+              console.error("Unexpected response:", data);
+            }
+          })
+          .catch(err => {
+            convertedText.textContent = `Error: ${err.message}`;
+            console.error("Fetch Error:", err);
+          });
       });
     }
   });
